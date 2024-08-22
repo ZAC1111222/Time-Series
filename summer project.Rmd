@@ -1,0 +1,2575 @@
+---
+title: "Untitled"
+output: pdf_document
+date: "2024-06-25"
+---
+
+```{r}
+library(dplyr)
+colony_a <- read.csv("colony_A.csv")
+colony_a_mean <- colony_a %>%
+  rowwise() %>%
+  mutate(Mean_Count = mean(c_across(starts_with("2015")), na.rm = TRUE))
+
+# Select and display the Ant Index and Mean Count
+ant_mean_counts <- colony_a_mean %>%
+  select(colony_a$`Ant Index`, Mean_Count)
+
+# Print the results
+print(ant_mean_counts)
+
+# Optionally, save the results to a CSV file
+write.csv(ant_mean_counts, "colony_a_ant_mean_counts.csv", row.names = FALSE)
+
+```
+
+```{r}
+library(tidyverse)
+library(reshape2)
+
+
+data <- read.csv("colony_E.csv")
+
+# Check data structures
+head(data)
+
+# Convert column names to standard date format
+colnames(data) <- c("Ant.Index", as.character(as.Date(colnames(data)[-1], format = "%Y/%m/%d")))
+
+# Convert data formats
+data_melt <- melt(data, id.vars = "Ant.Index", variable.name = "Date", value.name = "Value")
+
+# Check and convert date formats
+data_melt$Date <- as.Date(data_melt$Date, format = "%Y-%m-%d")
+
+# Remove rows with failed date conversion
+data_melt <- data_melt[!is.na(data_melt$Date), ]
+
+# Plotting time series
+ggplot(data_melt, aes(x = Date, y = Value, color = factor(Ant.Index))) +
+  geom_line() +
+  labs(title = "Time Series of Ant Activity in E", x = "Date", y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_color_discrete(name = "Ant Index")
+
+ 
+
+```
+
+
+
+
+
+
+```{r}
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+
+data <- read.csv("colony_A.csv")
+
+total_activity <- data %>%
+  rowwise() %>%
+  mutate(Total_Activity = sum(c_across(starts_with("X")))) %>%
+  ungroup()
+
+top_5 <- total_activity %>%
+  arrange(desc(Total_Activity)) %>%
+  slice(1:71) %>%
+  pull(Ant.Index)
+
+
+# Extract the first 5 ants
+top_5 <- data %>%
+  filter(Ant.Index %in% top_5) %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity")
+
+# Convert date formats
+top_5$Date <- as.Date(sub("X", "", top_5$Date), format="%Y.%m.%d")
+
+# Plot time series of top 5 ants with highest activity
+ggplot(top_5, aes(x = Date, y = Activity, color = as.factor(Ant.Index), group = Ant.Index)) +
+  geom_line() +
+  labs(title = "Activity Over Time for Top 5 Most Active Ants in Colony A", x = "Date", y = "Activity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +  
+  scale_x_date(date_breaks = "1 week", date_labels = "%Y-%m-%d")  
+
+
+
+
+data1 <- read.csv("colony_B.csv")
+total_activity <- data1 %>%
+  rowwise() %>%
+  mutate(Total_Activity = sum(c_across(starts_with("X")))) %>%
+  ungroup()
+
+top_5ants <- total_activity %>%
+  arrange(desc(Total_Activity)) %>%
+  slice(1:3) %>%
+  pull(Ant.Index)
+
+# Extract the first 5 ants
+top_5ants <- data1 %>%
+  filter(Ant.Index %in% top_5ants) %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity")
+
+# Convert date formats
+top_5ants$Date <- as.Date(sub("X", "", top_5ants$Date), format="%Y.%m.%d")
+
+# Plot time series of top 5 ants with highest activity
+ggplot(top_5ants, aes(x = Date, y = Activity, color = as.factor(Ant.Index), group = Ant.Index)) +
+  geom_line() +
+  labs(title = "Activity Over Time for Top 5 Most Active Ants in Colony B", x = "Date", y = "Activity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +  
+  scale_color_discrete(name = "Ant Index") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%Y-%m-%d")  
+
+
+
+data2 <- read.csv("colony_C.csv")
+total_activity <- data1 %>%
+  rowwise() %>%
+  mutate(Total_Activity = sum(c_across(starts_with("X")))) %>%
+  ungroup()
+
+top_5ants1 <- total_activity %>%
+  arrange(desc(Total_Activity)) %>%
+  slice(1:3) %>%
+  pull(Ant.Index)
+
+# Extract the first 5 ants
+top_5ants1 <- data2 %>%
+  filter(Ant.Index %in% top_5_ants_by_activity) %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity")
+
+# Convert date formats
+top_5ants1$Date <- as.Date(sub("X", "", top_5ants1$Date), format="%Y.%m.%d")
+
+# Plot time series of top 5 ants with highest activity
+ggplot(top_5ants1, aes(x = Date, y = Activity, color = as.factor(Ant.Index), group = Ant.Index)) +
+  geom_line() +
+  labs(title = "Activity Over Time for Top 5 Most Active Ants in Colony C", x = "Date", y = "Activity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +  
+  scale_color_discrete(name = "Ant Index") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%Y-%m-%d")  
+
+```
+
+```{r}
+data3 <- read.csv("colony_D.csv")
+total_activity <- data1 %>%
+  rowwise() %>%
+  mutate(Total_Activity = sum(c_across(starts_with("X")))) %>%
+  ungroup()
+
+top_5ants2 <- total_activity %>%
+  arrange(desc(Total_Activity)) %>%
+  slice(1:3) %>%
+  pull(Ant.Index)
+
+# Extract the first 5 ants
+top_5ants2 <- data3 %>%
+  filter(Ant.Index %in% top_5ants2) %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity")
+
+# Convert date formats
+top_5ants2$Date <- as.Date(sub("X", "", top_5ants2$Date), format="%Y.%m.%d")
+
+# Plot time series of top 5 ants with highest activity
+ggplot(top_5ants2, aes(x = Date, y = Activity, color = as.factor(Ant.Index), group = Ant.Index)) +
+  geom_line() +
+  labs(title = "Activity Over Time for Top 5 Most Active Ants in Colony D", x = "Date", y = "Activity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +  
+  scale_color_discrete(name = "Ant Index") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%Y-%m-%d")  
+
+
+
+data4 <- read.csv("colony_E.csv")
+total_activity <- data1 %>%
+  rowwise() %>%
+  mutate(Total_Activity = sum(c_across(starts_with("X")))) %>%
+  ungroup()
+
+top_5ants3 <- total_activity %>%
+  arrange(desc(Total_Activity)) %>%
+  slice(1:3) %>%
+  pull(Ant.Index)
+
+# Extract the first 5 ants
+top_5ants3 <- data4 %>%
+  filter(Ant.Index %in% top_5_ants_by_activity) %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity")
+
+# Convert date formats
+top_5ants3$Date <- as.Date(sub("X", "", top_5ants3$Date), format="%Y.%m.%d")
+
+# Plot time series of top 5 ants with highest activity
+ggplot(top_5ants3, aes(x = Date, y = Activity, color = as.factor(Ant.Index), group = Ant.Index)) +
+  geom_line() +
+  labs(title = "Activity Over Time for Top 5 Most Active Ants in Colony E", x = "Date", y = "Activity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) +  
+  scale_color_discrete(name = "Ant Index") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%Y-%m-%d") 
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(viridis)
+
+# Convert data formats
+long <- data %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity") %>%
+  mutate(Date = as.Date(sub("X", "", Date), format="%Y.%m.%d"))
+
+# heatmaps
+ggplot(long, aes(x = factor(Ant.Index), y = Date, fill = Activity)) +
+  geom_tile() +
+  scale_fill_viridis(option = "viridis", name = "Activity") +
+  labs(
+    title = "Heatmap of Ant Activity Over Time in Colony A",
+    x = "Ant Index",
+    y = "Date"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 5)]) 
+
+
+
+
+long1 <- data1 %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity") %>%
+  mutate(Date = as.Date(sub("X", "", Date), format="%Y.%m.%d"))
+
+
+ggplot(long1, aes(x = factor(Ant.Index), y = Date, fill = Activity)) +
+  geom_tile() +
+  scale_fill_viridis(option = "viridis", name = "Activity") +
+  labs(
+    title = "Heatmap of Ant Activity Over Time in Colony B",
+    x = "Ant Index",
+    y = "Date"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 5)]) 
+
+
+
+
+long2 <- data2 %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity") %>%
+  mutate(Date = as.Date(sub("X", "", Date), format="%Y.%m.%d"))
+
+ggplot(long2, aes(x = factor(Ant.Index), y = Date, fill = Activity)) +
+  geom_tile() +
+  scale_fill_viridis(option = "viridis", name = "Activity") +
+  labs(
+    title = "Heatmap of Ant Activity Over Time in Colony C",
+    x = "Ant Index",
+    y = "Date"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 5)]) 
+
+
+
+
+
+
+
+long3 <- data3 %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity") %>%
+  mutate(Date = as.Date(sub("X", "", Date), format="%Y.%m.%d"))
+
+ggplot(long3, aes(x = factor(Ant.Index), y = Date, fill = Activity)) +
+  geom_tile() +
+  scale_fill_viridis(option = "viridis", name = "Activity") +
+  labs(
+    title = "Heatmap of Ant Activity Over Time in Colony D",
+    x = "Ant Index",
+    y = "Date"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 5)]) 
+
+
+
+
+long4 <- data4 %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity") %>%
+  mutate(Date = as.Date(sub("X", "", Date), format="%Y.%m.%d"))
+
+ggplot(long4, aes(x = factor(Ant.Index), y = Date, fill = Activity)) +
+  geom_tile() +
+  scale_fill_viridis(option = "viridis", name = "Activity") +
+  labs(
+    title = "Heatmap of Ant Activity Over Time in Colony E",
+    x = "Ant Index",
+    y = "Date"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 5)]) 
+
+
+```
+
+
+
+```{r}
+library(dplyr)
+colony_A <- read_csv("colony_A.csv")
+
+# Five ants chosen at random
+set.seed(123)  
+sample_ants <- colony_A %>% sample_n(5)
+
+# Extract the first 13 days of data
+sample_13days <- sample_ants %>% select(Ant.Index, X2015.6.1:X2015.6.13)
+
+# Functions to calculate indicators and conditions
+calculate_metrics_and_conditions <- function(data) {
+  metrics <- data.frame()
+  for (i in 1:nrow(data)) {
+    ant_id <- data$Ant.Index[i]
+    events <- data[i, -1]
+    total_events <- sum(events)
+    active_days <- sum(events > 0)
+    total_days <- length(events)
+    active_period <- total_days
+
+    conditions <- c()
+    if (total_events >= 30) {
+      conditions <- c(conditions, "I")
+    }
+    if (active_days >= 10) {
+      conditions <- c(conditions, "II")
+    }
+    if (active_days >= total_days * 0.5) {
+      conditions <- c(conditions, "III")
+    }
+
+    metrics <- rbind(metrics, data.frame(
+      Ant.ID = ant_id,
+      Active.period = active_period,
+      Active.days = active_days,
+      The.number.of.passage.events = total_events,
+      Satisfied.conditions = paste(conditions, collapse = ", ")
+    ))
+  }
+  return(metrics)
+}
+
+# 计算选定蚂蚁的指标
+sample_ants_metrics <- calculate_metrics_and_conditions(sample_ants_13_days)
+
+# 打印结果
+print(sample_ants_13_days)
+print(sample_ants_metrics)
+
+```
+
+```{r}
+# 加载必要的包
+library(dplyr)
+
+# 读取数据
+colony_A <- read.csv("colony_A.csv")
+colony_B <- read.csv("colony_B.csv")
+colony_C <- read.csv("colony_C.csv")
+colony_D <- read.csv("colony_D.csv")
+colony_E <- read.csv("colony_E.csv")
+
+# 为每个数据集添加一个列，用于标识该数据集的来源
+colony_A <- colony_A %>% mutate(Colony = "A")
+colony_B <- colony_B %>% mutate(Colony = "B")
+colony_C <- colony_C %>% mutate(Colony = "C")
+colony_D <- colony_D %>% mutate(Colony = "D")
+colony_E <- colony_E %>% mutate(Colony = "E")
+
+# 将所有数据集合并为一个数据集
+combined_data <- bind_rows(colony_A, colony_B, colony_C, colony_D, colony_E)
+
+# 处理时间列，确保每个数据集的时间列不重叠
+# 这里假设所有数据集的时间列名相同且格式为YYYY/MM/DD
+combined_data <- combined_data %>% 
+  gather(key = "Date", value = "Foraging", -Ant.Index, -Colony) %>% 
+  mutate(Date = as.Date(Date, format = "%Y/%m/%d"))
+
+# 打印合并后的数据集
+print(combined_data)
+
+```
+
+```{r}
+library(tidyr)
+library(dplyr)
+
+
+data <- read.csv("colony_E.csv")
+
+data <- data %>% 
+  gather(Date, Activity, -Ant.Index) %>% 
+  spread(Ant.Index, Activity)
+
+# Calculate the total activity of each ant
+total <- colSums(data[-1], na.rm = TRUE)
+
+# Find the top three most active ants
+top_3 <- names(sort(total, decreasing = TRUE))[1:3]
+
+# Find out the three days before these three ants were most active
+top_3days <- lapply(top_3, function(ant) {
+  ant_data <- data[[ant]]
+  top_days <- sort(ant_data, decreasing = TRUE, index.return = TRUE)$ix[1:3]
+  data$Date[top_days]
+})
+
+# Convert results into dataframes
+top_3daysdf <- data.frame(
+  Ant = rep(top_3, each = 3),
+  Top_Days = unlist(top_3days)
+)
+
+
+print(top_3daysdf)
+
+
+
+```
+
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+data <- data.frame(
+  Colony.A = c('2015-06-29', '2015-06-27', '2015-07-02', '2015-06-01', '2015-08-01', '2015-06-29', '2015-06-27', '2015-06-01', '2015-06-28'),
+  Colony.B = c('2018-06-03', '2018-07-05', '2018-06-13', '2018-07-05', '2018-06-03', '2018-06-12', '2018-07-04', '2018-07-05', '2018-06-03'),
+  Colony.C = c('2018-09-08', '2018-09-07', '2018-09-02', '2018-09-07', '2018-09-08', '2018-08-29', '2018-07-25', '2018-07-28', '2018-07-29'),
+  Colony.D = c('2018-06-27', '2018-07-02', '2018-08-18', '2018-06-27', '2018-06-28', '2018-09-13', '2018-09-14', '2018-07-29', '2018-08-18'),
+  Colony.E = c('2018-08-19', '2018-09-02', '2018-08-07', '2018-07-05', '2018-07-30', '2018-06-27', '2018-06-27', '2018-07-05', '2018-07-26')
+)
+
+# Convert data frame from wide format to long format
+df_melted <- melt(data, variable.name = 'Colony', value.name = 'Date', id.vars = NULL)
+
+# Convert date formats
+df_melted$Date <- as.Date(df_melted$Date, format="%Y-%m-%d")
+
+# Adjust plot indexes to make data points more compactly arranged
+df_melted$Index <- rep(1:9, times=5)
+
+# Plotting line graphs
+ggplot(df_melted, aes(x = Index, y = Date, color = Colony, group = Colony)) +
+  geom_line(linewidth=1) +
+  geom_point(size=2) +
+  labs(title = 'Line Plot of Top Activity Days for Each Colony', x = 'Index', y = 'Date') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(size=14, face="bold"),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12))
+
+
+
+
+```
+```{r}
+library(ggplot2)
+library(reshape2)
+library(gridExtra)
+
+data <- data.frame(
+  Activity = c(0, 0, 0, 1, 1, 1, 2, 2, 2),
+  Colony.A = c('2015-06-29', '2015-06-27', '2015-07-02', '2015-06-01', '2015-08-01', '2015-06-29', '2015-06-27', '2015-06-01', '2015-06-28'),
+  Colony.B = c('2018-06-03', '2018-07-05', '2018-06-13', '2018-07-05', '2018-06-03', '2018-06-12', '2018-07-04', '2018-07-05', '2018-06-03'),
+  Colony.C = c('2018-09-08', '2018-09-07', '2018-09-02', '2018-09-07', '2018-09-08', '2018-08-29', '2018-07-25', '2018-07-28', '2018-07-29'),
+  Colony.D = c('2018-06-27', '2018-07-02', '2018-08-18', '2018-06-27', '2018-06-28', '2018-09-13', '2018-09-14', '2018-07-29', '2018-08-18'),
+  Colony.E = c('2018-08-19', '2018-09-02', '2018-08-07', '2018-07-05', '2018-07-30', '2018-06-27', '2018-06-27', '2018-07-05', '2018-07-26')
+)
+
+# Convert data frame from wide format to long format
+df_melted <- melt(data, id.vars = "Activity", variable.name = 'Colony', value.name = 'Date')
+
+# Convert date formats
+df_melted$Date <- as.Date(df_melted$Date, format="%Y-%m-%d")
+
+# Histograms in groups
+plot_list <- list()
+activities <- unique(df_melted$Activity)
+
+for (activity in activities) {
+  p <- ggplot(subset(df_melted, Activity == activity), aes(x = Date, fill = Colony)) +
+    geom_histogram(position = "identity", alpha = 0.5, binwidth = 10) +
+    labs(title = paste('Histogram of Top Activity Days for Ant index', activity), x = 'Date', y = 'Frequency') +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(size=14, face="bold"),
+          axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+  
+  plot_list[[as.character(activity)]] <- p
+}
+
+# Use the gridExtra package to combine multiple charts together
+do.call(grid.arrange, c(plot_list, ncol = 1))
+
+
+```
+```{r}
+library(ggplot2)
+library(reshape2)
+
+data <- data.frame(
+  Activity = c(0, 0, 0, 1, 1, 1, 2, 2, 2),
+  Colony.A = c('2015-06-29', '2015-06-27', '2015-07-02', '2015-06-01', '2015-08-01', '2015-06-29', '2015-06-27', '2015-06-01', '2015-06-28'),
+  Colony.B = c('2018-06-03', '2018-07-05', '2018-06-13', '2018-07-05', '2018-06-03', '2018-06-12', '2018-07-04', '2018-07-05', '2018-06-03'),
+  Colony.C = c('2018-09-08', '2018-09-07', '2018-09-02', '2018-09-07', '2018-09-08', '2018-08-29', '2018-07-25', '2018-07-28', '2018-07-29'),
+  Colony.D = c('2018-06-27', '2018-07-02', '2018-08-18', '2018-06-27', '2018-06-28', '2018-09-13', '2018-09-14', '2018-07-29', '2018-08-18'),
+  Colony.E = c('2018-08-19', '2018-09-02', '2018-08-07', '2018-07-05', '2018-07-30', '2018-06-27', '2018-06-27', '2018-07-05', '2018-07-26')
+)
+
+# Convert data frame from wide format to long format
+df_melted <- melt(data, id.vars = "Activity", variable.name = 'Colony', value.name = 'Date')
+
+# Convert date formats
+df_melted$Date <- as.Date(df_melted$Date, format="%Y-%m-%d")
+
+# Plot histograms for each activity group separately and save as separate image files
+activities <- unique(df_melted$Activity)
+
+for (activity in activities) {
+  p <- ggplot(subset(df_melted, Activity == activity), aes(x = Date, fill = Colony)) +
+    geom_histogram(position = "identity", alpha = 0.5, binwidth = 10) +
+    labs(title = paste('Histogram of Top Activity Days for Activity', activity), x = 'Date', y = 'Frequency') +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(size=14, face="bold"),
+          axis.title.x = element_text(size=12),
+          axis.title.y = element_text(size=12))
+  
+  
+  ggsave(paste0("activity_", activity, "_histogram.png"), plot = p)
+  
+  
+  print(p)
+}
+
+```
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Load the data from the CSV files
+colony_a_data <- read.csv("colony_A.csv")
+colony_b_data <- read.csv("colony_B.csv")
+colony_c_data <- read.csv("colony_C.csv")
+colony_d_data <- read.csv("colony_D.csv")
+colony_e_data <- read.csv("colony_E.csv")
+
+# Process data for each colony
+process_colony <- function(colony_data) {
+  data <- colony_data %>% select(-Ant.Index)
+  mean_activity <- colMeans(data)
+  std_activity <- apply(data, 2, sd)
+  return(list(mean=mean_activity, std=std_activity))
+}
+
+# Get processed data for each colony
+colony_a <- process_colony(colony_a_data)
+colony_b <- process_colony(colony_b_data)
+colony_c <- process_colony(colony_c_data)
+colony_d <- process_colony(colony_d_data)
+colony_e <- process_colony(colony_e_data)
+
+# Create data frame for plotting
+days_a <- seq_along(colony_a$mean)
+days_b <- seq_along(colony_b$mean)
+days_c <- seq_along(colony_c$mean)
+days_d <- seq_along(colony_d$mean)
+days_e <- seq_along(colony_e$mean)
+
+df <- data.frame(
+  days = c(days_a, days_b, days_c, days_d, days_e),
+  mean_activity = c(colony_a$mean, colony_b$mean, colony_c$mean, colony_d$mean, colony_e$mean),
+  std_activity = c(colony_a$std, colony_b$std, colony_c$std, colony_d$std, colony_e$std),
+  colony = factor(rep(c("Colony A (29.3 days)", "Colony B (26.8 days)", "Colony C (31.4 days)", "Colony D (87 days)", "Colony E (87 days)"),
+                      times = c(length(days_a), length(days_b), length(days_c), length(days_d), length(days_e))))
+)
+
+# Plot the data
+ggplot(df, aes(x=days, y=mean_activity, color=colony)) +
+  geom_line() +
+  geom_errorbar(aes(ymin=mean_activity-std_activity, ymax=mean_activity+std_activity), width=0.2) +
+  labs(title="Daily Activity Time Series of Colonies A, B, C, D, and E",
+       x="Interval (days)", y="Averaged") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+
+```
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+
+# Load the data from the CSV files
+colonyd <- read.csv("colony_D.csv")
+colonye <- read.csv("colony_E.csv")
+
+# Calculate the number of days for each colony
+calculate_days <- function(colony_data) {
+  num_days <- ncol(colony_data) - 1  # Subtracting the index column
+  return(num_days)
+}
+
+# Get the number of days for each colony
+days_d <- calculate_days(colonyd)
+days_e <- calculate_days(colonye)
+
+# Print the number of days
+print(paste("Colony D:", days_d, "days"))
+print(paste("Colony E:", days_e, "days"))
+
+```
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+
+# Load the data from the CSV files
+colonya <- read.csv("colony_A.csv")
+colonyb <- read.csv("colony_C.csv")
+
+# Calculate the average number of non-zero days for each colony
+meandays <- function(colony_data) {
+  nonzerodays <- rowSums(colony_data[, -1] != 0)
+  meandays <- mean(nonzerodays)
+  return(meandays)
+}
+
+# Get the average number of days for each colony
+meandays_a <- meandays(colonya)
+meandays_b <- meandays(colonyb)
+
+# Print the average number of days
+print(paste("Colony A:", meandays_a, "days"))
+print(paste("Colony B:", meandays_b, "days"))
+
+```
+
+```{r}
+
+library(dplyr)
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library(clusterSim)
+
+data <- read.csv("colony_E.csv")
+
+print(colnames(data))
+X <- subset(data, select = -Ant.Index)
+X_scaled <- scale(X)
+
+# Elbow Method
+elbow_plot <- fviz_nbclust(X_scaled, kmeans, method = "wss") +
+  ggtitle("Elbow Method In Colony E")
+
+
+# Calinski-Harabasz Index
+ch_plot <- fviz_nbclust(X_scaled, kmeans, method = "gap_stat") +
+  ggtitle("Calinski-Harabasz Index In Colony C")
+
+# Davies-Bouldin Index
+db_indices <- sapply(2:10, function(k) {
+  model <- kmeans(X_scaled, centers = k, nstart = 25)
+  index.DB(X_scaled, model$cluster, centrotypes = "centroids")$DB
+})
+
+db_plot <- tibble(k = 2:10, DB = db_indices) %>%
+  ggplot(aes(x = k, y = DB)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Davies-Bouldin Index In Colony C", x = "Number of clusters k", y = "Davies-Bouldin Index")
+
+
+print(elbow_plot)
+print(ch_plot)
+print(db_plot)
+
+```
+
+
+
+
+
+```{r}
+library(ggplot2)
+library(cluster)
+library(dplyr)
+library(tidyr)
+
+data <- read.csv("colony_C.csv") 
+data_scaled <- scale(data[,-1])  # Standardised data, excluding the first column ‘Ant Index’
+
+# PCA downgrade
+pca <- prcomp(data_scaled, scale. = TRUE)
+pca_result <- data.frame(pca$x[,1:2])  # Take only the first two principal components
+
+# K-means
+set.seed(0)
+kmeans_result <- kmeans(pca_result, centers = 3)
+pca_result$cluster <- factor(kmeans_result$cluster)
+
+# Bumpy packet function
+compute_hull <- function(df) df[chull(df$PC1, df$PC2), ]
+
+# Calculate the convex envelope for each cluster
+hulls <- pca_result %>% 
+  group_by(cluster) %>% 
+  do(compute_hull(.))
+
+
+ggplot(pca_result, aes(x = PC1, y = PC2, color = cluster, shape = cluster)) +
+  geom_point(size = 3) +
+  geom_polygon(data = hulls, aes(fill = cluster), alpha = 0.3) +
+  labs(title = "K-means Clustering In Colony A", 
+       x = paste0("Dim1 (", round(summary(pca)$importance[2,1]*100, 1), "%)"), 
+       y = paste0("Dim2 (", round(summary(pca)$importance[2,2]*100, 1), "%)")) +
+  theme_minimal()
+
+```
+
+
+
+
+
+
+
+
+
+```{r}
+library(tidyverse)
+library(cluster)
+library(factoextra)
+
+# Assume data is normalised and stored in X_scaled
+# Perform k-mean clustering, k=4
+set.seed(0)  # Setting random seeds for repeatable results
+kmeans_result <- kmeans(X_scaled, centers = 4, nstart = 25)
+
+# Add clustering labels to raw data
+data$Cluster <- kmeans_result$cluster
+
+# Show first few rows of data with cluster labels
+head(data)
+
+```
+
+
+```{r}
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library(lubridate)
+
+
+
+# Convert data to long format for plotting图
+data_long <- data %>%
+  pivot_longer(cols = starts_with("X"), names_to = "Date", values_to = "Activity")
+
+# Ensure that dates are listed in date format
+data_long <- data_long %>%
+  mutate(Date = ymd(sub("X", "", Date)))
+
+
+
+# Calculate the average activity for each cluster
+average <- data_long %>%
+  group_by(Date, Cluster) %>%
+  summarise(Average = mean(Activity, na.rm = TRUE))
+
+# Check that the calculated average activity is correct
+print(head(average))
+
+# Plotting average activity per cluster
+ggplot(average, aes(x = Date, y = Average, color = as.factor(Cluster), group = Cluster)) +
+  geom_line() +
+  labs(x = "Date", y = "Average Activity", title = "Average Activity Patterns for Each Cluster In Colony E", color = "Cluster") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_x_date(date_labels = "%Y-%m-%d", date_breaks = "1 day")
+
+
+```
+
+
+```{r}
+library(tidyverse)
+
+# Ensure that Cluster columns are factors
+data$Cluster <- as.factor(data$Cluster)
+
+# Create a list to store the correlation dataframes for each cluster
+cluster_correlations <- list()
+
+# Calculate pairwise correlations in each cluster
+for (cluster in unique(data$Cluster)) {
+  cluster_data <- data[data$Cluster == cluster, ]
+  cluster_data <- cluster_data[, !(names(cluster_data) %in% c("Ant.Index", "Cluster"))]
+  
+  # Remove columns with zero standard deviation
+  cluster_data <- cluster_data[, sapply(cluster_data, sd) != 0]
+  
+  # Calculate the correlation matrix and convert to long form
+  correlations <- as.data.frame(as.table(cor(cluster_data, use = "pairwise.complete.obs")))
+  colnames(correlations) <- c("Ant1", "Ant2", "Correlation")
+  
+  # Filter out autocorrelation (self-correlation with itself)
+  correlations <- correlations %>% filter(Ant1 != Ant2)
+  
+  cluster_correlations[[as.character(cluster)]] <- correlations
+}
+
+# Calculate the average correlation for each cluster
+average_correlations <- sapply(cluster_correlations, function(correlations) {
+  mean(correlations$Correlation, na.rm = TRUE)
+})
+
+# Show average correlation for each cluster
+print(average_correlations)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(tidyverse)
+
+# Calculate overall mean activity and standard deviation for each cluster
+cluster <- data %>%
+  group_by(Cluster) %>%
+  summarise(across(-`Ant.Index`, list(mean = mean, std = sd)))
+
+print(cluster_stats)
+
+```
+
+```{r}
+library(tidyverse)
+str(data)
+
+# Calculate overall mean activity and standard deviation for each cluster
+cluster <- data %>%
+  group_by(Cluster) %>%
+  summarise(across(-`Ant.Index`, list(mean = mean, std = sd)))
+
+# Display statistics
+print(cluster_stats)
+
+# Load the necessary libraries
+library(tidyverse)
+library(stats)
+
+# Prepare data for Kruskal-Wallis H test
+cluster_data <- cluster %>%
+  pivot_longer(!Cluster, names_to = "Date", values_to = "Activity")
+
+# Examine the converted data structure
+str(cluster_data)
+
+# Check converted data for NA values or unreasonable values
+summary(cluster_data)
+
+# Perform the Kruskal-Wallis H-test
+kruskal_test <- kruskal.test(Activity ~ Cluster, data = cluster_data)
+
+# Show results
+kruskal_test$statistic
+kruskal_test$p.value
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#time series analysis
+
+```{r}
+library(tseries)
+
+colony_A <- read.csv('colony_A.csv')
+colony_A <- na.omit(colony_A_data)  # Remove rows containing NA values
+
+# Shift the data to ensure all values are positive, then apply a logarithmic transformation
+colony_A_data_shifted <- colony_A_data[,-1] + 1  # Add 1 to avoid log(0)
+colony_A_data_log <- log(colony_A_data_shifted)
+
+# Define safe ADF test functions
+adf_test_safe <- function(series) {
+  series <- series[!is.na(series) & is.finite(series)]  # Remove NA/NaN/Inf values
+  if (length(series) < 10) {  # Check the length of the time series
+    return(list(ADF_Statistic = NA, p_value = NA, Critical_Values = list('1%' = NA, '5%' = NA, '10%' = NA)))
+  }
+  result <- tryCatch(adf.test(series, k = trunc((length(series) - 1)^(1/3))), error = function(e) return(e))
+  if (inherits(result, "error")) {
+    return(list(ADF_Statistic = NA, p_value = NA, Critical_Values = list('1%' = NA, '5%' = NA, '10%' = NA), Error = as.character(result)))
+  } else {
+    return(list(ADF_Statistic = result$statistic, p_value = result$p.value, Critical_Values = result$parameter))
+  }
+}
+
+# Initialise list storage results
+adf_results <- list(n_i = list(), log_n_i = list(), diff_n_i = list(), diff_log_n_i = list())
+# ADF test for each time series
+for (i in 1:nrow(colony_A_data)) {
+  series_n_i <- as.numeric(colony_A_data_shifted[i, ])
+  series_log_n_i <- as.numeric(colony_A_data_log[i, ])
+  series_diff_n_i <- diff(series_n_i, differences = 1)
+  series_diff_log_n_i <- diff(series_log_n_i, differences = 1)
+  
+  adf_results$n_i[[i]] <- adf_test_safe(series_n_i)
+  adf_results$log_n_i[[i]] <- adf_test_safe(series_log_n_i)
+  adf_results$diff_n_i[[i]] <- adf_test_safe(series_diff_n_i)
+  adf_results$diff_log_n_i[[i]] <- adf_test_safe(series_diff_log_n_i)
+}
+
+# Extract statistics and p-values from ADF test results
+extract_adf_results <- function(adf_result_list) {
+  ADF_Statistic <- sapply(adf_result_list, function(x) x$ADF_Statistic)
+  p_value <- sapply(adf_result_list, function(x) x$p_value)
+  Critical_Values_1pct <- sapply(adf_result_list, function(x) x$Critical_Values['1%'])
+  Critical_Values_5pct <- sapply(adf_result_list, function(x) x$Critical_Values['5%'])
+  Critical_Values_10pct <- sapply(adf_result_list, function(x) x$Critical_Values['10%'])
+  return(data.frame(ADF_Statistic, p_value, Critical_Values_1pct, Critical_Values_5pct, Critical_Values_10pct))
+}
+
+# Convert results to dataframes
+n_i_df <- extract_adf_results(adf_results$n_i)
+log_n_i_df <- extract_adf_results(adf_results$log_n_i)
+diff_n_i_df <- extract_adf_results(adf_results$diff_n_i)
+diff_log_n_i_df <- extract_adf_results(adf_results$diff_log_n_i)
+
+# Print separate results dataframes for checking
+print("ADF Test Results for n_i")
+print(n_i_df)
+print("ADF Test Results for log_n_i")
+print(log_n_i_df)
+print("ADF Test Results for diff_n_i")
+print(diff_n_i_df)
+print("ADF Test Results for diff_log_n_i")
+print(diff_log_n_i_df)
+
+# Merge all results into one dataframe
+all_results_df <- data.frame(
+  n_i = n_i_df,
+  log_n_i = log_n_i_df,
+  diff_n_i = diff_n_i_df,
+  diff_log_n_i = diff_log_n_i_df
+)
+
+
+print("All ADF Test Results")
+print(all_results_df)
+
+
+
+
+library(tseries)
+library(dplyr)
+
+
+colony_A <- read.csv('colony_A.csv')
+# Shift the data to ensure all values are positive before applying log transformation
+colony_A_data_shifted <- colony_A_data[, -1] + 1  # Adding 1 to avoid log(0)
+
+# Apply log transformation
+colony_A_data_log <- log(colony_A_data_shifted)
+
+# Function to perform ADF test and handle potential errors
+adf_test_safe <- function(series) {
+  tryCatch({
+    result <- adf.test(series)
+    return(list('ADF Statistic' = result$statistic, 'p-value' = result$p.value))
+  }, error = function(e) {
+    return(list('ADF Statistic' = NA, 'p-value' = NA))
+  })
+}
+
+# Initialize lists to store results
+adf_results <- list(n_i = list(), log_n_i = list(), diff_n_i = list(), diff_log_n_i = list())
+
+# Perform ADF test for each time series in the dataset
+for (i in 1:nrow(colony_A_data_shifted)) {
+  series_n_i <- as.numeric(colony_A_data_shifted[i, ])
+  series_log_n_i <- as.numeric(colony_A_data_log[i, ])
+  series_diff_n_i <- diff(series_n_i)
+  series_diff_log_n_i <- diff(series_log_n_i)
+  
+  adf_results$n_i[[i]] <- adf_test_safe(series_n_i)
+  adf_results$log_n_i[[i]] <- adf_test_safe(series_log_n_i)
+  adf_results$diff_n_i[[i]] <- adf_test_safe(series_diff_n_i)
+  adf_results$diff_log_n_i[[i]] <- adf_test_safe(series_diff_log_n_i)
+}
+
+# Convert results to a DataFrame for easier handling
+adf_results_df <- data.frame(
+  n_i = sapply(adf_results$n_i, function(x) x[['p-value']]),
+  log_n_i = sapply(adf_results$log_n_i, function(x) x[['p-value']]),
+  diff_n_i = sapply(adf_results$diff_n_i, function(x) x[['p-value']]),
+  diff_log_n_i = sapply(adf_results$diff_log_n_i, function(x) x[['p-value']])
+)
+
+# Count the number of p-values greater than 0.05
+count_greater_than_0_05 <- sum(adf_results_df > 0.05, na.rm = TRUE)
+
+print(paste("The number of p-values greater than 0.05 is:", count_greater_than_0_05))
+
+
+
+
+
+```
+
+```{r}
+library(tseries)
+library(dplyr)
+
+colony_A_data <- read.csv('colony_A.csv')
+# Shift the data to ensure all values are positive before applying log transformation
+colony_A_data_shifted <- colony_A_data[, -1] + 1  # Adding 1 to avoid log(0)
+
+# Apply log transformation
+colony_A_data_log <- log(colony_A_data_shifted)
+
+# Function to perform ADF test and handle potential errors
+adf_test_safe <- function(series) {
+  tryCatch({
+    result <- adf.test(series)
+    return(list('ADF Statistic' = result$statistic, 'p-value' = result$p.value))
+  }, error = function(e) {
+    return(list('ADF Statistic' = NA, 'p-value' = NA))
+  })
+}
+
+# Initialize lists to store results
+adf_results <- list(n_i = list(), log_n_i = list(), diff_n_i = list(), diff_log_n_i = list())
+
+# Perform ADF test for each time series in the dataset
+for (i in 1:nrow(colony_A_data_shifted)) {
+  series_n_i <- as.numeric(colony_A_data_shifted[i, ])
+  series_log_n_i <- as.numeric(colony_A_data_log[i, ])
+  series_diff_n_i <- diff(series_n_i)
+  series_diff_log_n_i <- diff(series_log_n_i)
+  
+  adf_results$n_i[[i]] <- adf_test_safe(series_n_i)
+  adf_results$log_n_i[[i]] <- adf_test_safe(series_log_n_i)
+  adf_results$diff_n_i[[i]] <- adf_test_safe(series_diff_n_i)
+  adf_results$diff_log_n_i[[i]] <- adf_test_safe(series_diff_log_n_i)
+}
+
+# Convert results to a DataFrame for easier handling
+adf_results_df <- data.frame(
+  n_i = sapply(adf_results$n_i, function(x) x[['p-value']]),
+  log_n_i = sapply(adf_results$log_n_i, function(x) x[['p-value']]),
+  diff_n_i = sapply(adf_results$diff_n_i, function(x) x[['p-value']]),
+  diff_log_n_i = sapply(adf_results$diff_log_n_i, function(x) x[['p-value']])
+)
+
+# Count the number of p-values greater than 0.05
+count_greater_than_0_05 <- sum(adf_results_df > 0.05, na.rm = TRUE)
+
+# Calculate the total number of non-NA sample values
+total_samples <- sum(!is.na(adf_results_df))
+
+print(paste("The number of p-values greater than 0.05 is:", count_greater_than_0_05))
+print(paste("The total number of sample values is:", total_samples))
+
+```
+
+```{r}
+library(tseries)
+library(dplyr)
+
+colony_A_data <- read.csv('colony_E.csv')
+
+# Shift the data to ensure all values are positive before applying log transformation
+colony_A_data_shifted <- colony_A_data[, -1] + 1  # Adding 1 to avoid log(0)
+
+# Apply log transformation
+colony_A_data_log <- log(colony_A_data_shifted)
+
+# Function to perform ADF test and handle potential errors
+adf_test_safe <- function(series) {
+  tryCatch({
+    result <- adf.test(series)
+    return(list('ADF Statistic' = result$statistic, 'p-value' = result$p.value))
+  }, error = function(e) {
+    return(list('ADF Statistic' = NA, 'p-value' = NA))
+  })
+}
+
+# Initialize lists to store results
+adf_results <- list(n_i = list(), log_n_i = list(), diff_n_i = list(), diff_log_n_i = list())
+
+# Perform ADF test for each time series in the dataset
+for (i in 1:nrow(colony_A_data_shifted)) {
+  series_n_i <- as.numeric(colony_A_data_shifted[i, ])
+  series_log_n_i <- as.numeric(colony_A_data_log[i, ])
+  series_diff_n_i <- diff(series_n_i)
+  series_diff_log_n_i <- diff(series_log_n_i)
+  
+  adf_results$n_i[[i]] <- adf_test_safe(series_n_i)
+  adf_results$log_n_i[[i]] <- adf_test_safe(series_log_n_i)
+  adf_results$diff_n_i[[i]] <- adf_test_safe(series_diff_n_i)
+  adf_results$diff_log_n_i[[i]] <- adf_test_safe(series_diff_log_n_i)
+}
+
+# Convert results to a DataFrame for easier handling
+adf_results_df <- data.frame(
+  n_i = sapply(adf_results$n_i, function(x) x[['p-value']]),
+  log_n_i = sapply(adf_results$log_n_i, function(x) x[['p-value']]),
+  diff_n_i = sapply(adf_results$diff_n_i, function(x) x[['p-value']]),
+  diff_log_n_i = sapply(adf_results$diff_log_n_i, function(x) x[['p-value']])
+)
+
+# Count the number of p-values greater than 0.05 for n_i and log_n_i
+count_greater_than_0_05_n_i <- sum(adf_results_df$n_i < 0.05, na.rm = TRUE)
+count_greater_than_0_05_log_n_i <- sum(adf_results_df$log_n_i < 0.05, na.rm = TRUE)
+
+# Calculate the total number of non-NA sample values for n_i and log_n_i
+total_samples_n_i <- sum(!is.na(adf_results_df$n_i))
+total_samples_log_n_i <- sum(!is.na(adf_results_df$log_n_i))
+
+print(paste("The number of p-values smaller than 0.05 for n_i is:", count_greater_than_0_05_n_i))
+print(paste("The number of p-values smaller than 0.05 for log_n_i is:", count_greater_than_0_05_log_n_i))
+print(paste("The total number of sample values for n_i is:", total_samples_n_i))
+print(paste("The total number of sample values for log_n_i is:", total_samples_log_n_i))
+
+```
+
+```{r}
+library(tseries)
+library(dplyr)
+
+
+# Shift the data to ensure all values are positive before applying log transformation
+colony_A_data_shifted <- colony_A_data[, -1] + 1  # Adding 1 to avoid log(0)
+
+# Apply log transformation
+colony_A_data_log <- log(colony_A_data_shifted)
+
+# Calculate the first differences (epsilon_i,t)
+epsilon_i_t <- apply(colony_A_data_shifted, 2, diff)
+log_epsilon_i_t <- apply(colony_A_data_log, 2, diff)
+
+# Function to perform ADF test and handle potential errors
+adf_test_safe <- function(series) {
+  tryCatch({
+    result <- adf.test(series)
+    return(list('ADF Statistic' = result$statistic, 'p-value' = result$p.value))
+  }, error = function(e) {
+    return(list('ADF Statistic' = NA, 'p-value' = NA))
+  })
+}
+
+# Initialize lists to store results for epsilon_i,t
+adf_results_epsilon <- list(n_i_diff = list(), log_n_i_diff = list())
+
+# Perform ADF test for each time series in epsilon_i,t
+for (i in 1:ncol(epsilon_i_t)) {
+  series_diff_n_i <- epsilon_i_t[, i]
+  series_diff_log_n_i <- log_epsilon_i_t[, i]
+  
+  adf_results_epsilon$n_i_diff[[i]] <- adf_test_safe(series_diff_n_i)
+  adf_results_epsilon$log_n_i_diff[[i]] <- adf_test_safe(series_diff_log_n_i)
+}
+
+# Convert results to a DataFrame for easier handling
+adf_results_epsilon_df <- data.frame(
+  n_i_diff = sapply(adf_results_epsilon$n_i_diff, function(x) x[['p-value']]),
+  log_n_i_diff = sapply(adf_results_epsilon$log_n_i_diff, function(x) x[['p-value']])
+)
+
+# Count the number of p-values greater than 0.05 for n_i_diff and log_n_i_diff
+count_greater_than_0_05_n_i_diff <- sum(adf_results_epsilon_df$n_i_diff > 0.05, na.rm = TRUE)
+count_greater_than_0_05_log_n_i_diff <- sum(adf_results_epsilon_df$log_n_i_diff > 0.05, na.rm = TRUE)
+
+# Calculate the total number of non-NA sample values for n_i_diff and log_n_i_diff
+total_samples_n_i_diff <- sum(!is.na(adf_results_epsilon_df$n_i_diff))
+total_samples_log_n_i_diff <- sum(!is.na(adf_results_epsilon_df$log_n_i_diff))
+
+print(paste("The number of p-values greater than 0.05 for n_i_diff is:", count_greater_than_0_05_n_i_diff))
+print(paste("The number of p-values greater than 0.05 for log_n_i_diff is:", count_greater_than_0_05_log_n_i_diff))
+print(paste("The total number of sample values for n_i_diff is:", total_samples_n_i_diff))
+print(paste("The total number of sample values for log_n_i_diff is:", total_samples_log_n_i_diff))
+
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(scales)
+
+# Define the function that calculates the residuals
+calculate_residuals <- function(series) {
+  mean_series <- mean(series, na.rm = TRUE)
+  residuals <- series - mean_series
+  return(residuals)
+}
+
+# Assume colony_A_data_log has been created as log-transformed data
+# Calculate the residuals of the log-transformed series
+residuals <- apply(colony_A_data_log, 1, calculate_residuals)
+
+# Convert residuals to dataframes
+residuals_df <- as.data.frame(t(residuals))
+
+# Calculate the correlation matrix of the residuals
+correlation_matrix <- cor(residuals_df, use = "complete.obs")
+
+# Print the correlation matrix
+print(correlation_matrix)
+
+# Convert the correlation matrix to long format
+correlation_matrix_melted <- melt(correlation_matrix)
+
+# heatmaps
+ggplot(data = correlation_matrix_melted, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Pearson\nCorrelation") +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 10)]) + 
+  scale_y_discrete(breaks = function(x) x[seq(1, length(x), by = 10)]) +  
+  theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+                                   size = 8, hjust = 1),
+        axis.text.y = element_text(size = 8),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_fixed() +
+  labs(title = "Heatmap of Residuals Correlation Matrix in Colony E", x = "Ants", y = "Ants")
+
+
+
+
+```
+
+```{r}
+library(tidyverse)
+library(stats)
+colony_A_data <- read.csv("colony_A.csv")
+
+# Calculate log-transformed data
+colony_A_data_log <- log1p(colony_A_data[-1]) 
+
+# Functions to calculate residuals
+calculate_residuals <- function(series) {
+  mean_series <- mean(series, na.rm = TRUE)
+  residuals <- series - mean_series
+  return(residuals)
+}
+
+# Calculate the residuals of a series of logarithmic transformations
+residuals <- apply(colony_A_data_log, 1, calculate_residuals)
+residuals <- t(residuals)  # Transpose the matrix to accommodate subsequent calculations
+
+
+# Functions that perform the Shapiro-Wilk test
+shapiro_test <- function(series) {
+  if (length(unique(series)) > 1) {  # Ensure that there are changing values in the sample
+    test_result <- shapiro.test(series)
+    c(test_result$statistic, test_result$p.value)
+  } else {
+    c(NA, NA)  
+  }
+}
+
+# Apply the Shapiro-Wilk test to the residuals
+shapiro_test_results <- apply(residuals, 1, function(x) {
+  shapiro_test(x)
+})
+
+# Formatting results into dataframes
+shapiro_test_results_df <- as.data.frame(t(shapiro_test_results))
+colnames(shapiro_test_results_df) <- c("Shapiro-Wilk Statistic", "p-value")
+
+print(head(shapiro_test_results_df))
+
+
+```
+
+```{r}
+library(tidyverse)
+library(stats)
+colony_A_data <- read.csv("colony_E.csv")
+
+# Calculate log-transformed data
+colony_A_data_log <- log1p(colony_A_data[-1])  
+# Functions to calculate residuals
+calculate_residuals <- function(series) {
+  mean_series <- mean(series, na.rm = TRUE)
+  residuals <- series - mean_series
+  return(residuals)
+}
+
+# Calculate the residuals of a series of logarithmic transformations
+residuals <- apply(colony_A_data_log, 1, calculate_residuals)
+residuals <- t(residuals)  # Transpose the matrix to accommodate subsequent calculations
+
+
+# Functions that perform the Shapiro-Wilk test
+shapiro_test <- function(series) {
+  if (length(unique(series)) > 1) {  # Ensure that there are changing values in the sample
+    test_result <- shapiro.test(series)
+    c(test_result$statistic, test_result$p.value)
+  } else {
+    c(NA, NA) 
+  }
+}
+
+# Apply the Shapiro-Wilk test to the residuals
+shapiro_test_results <- apply(residuals, 1, function(x) {
+  shapiro_test(x)
+})
+
+# Formatting results into dataframes
+shapiro_test_results_df <- as.data.frame(t(shapiro_test_results))
+colnames(shapiro_test_results_df) <- c("Shapiro-Wilk Statistic", "p-value")
+
+print(shapiro_test_results_df)
+shapiro_test_results_df$`p-value`
+
+significant_results <- shapiro_test_results_df %>% filter(`p-value` > 0.05)
+
+# Show all rows with p-value less than 0.05
+print(significant_results)
+sum(shapiro_test_results)
+
+
+
+```
+
+```{r}
+library(ggplot2)
+library(fitdistrplus)
+library(scales)
+
+
+data <- read.csv("colony_E.csv")
+
+# Calculate the sum of foraging frequencies for each ant
+foraging_frequencies <- rowSums(data[,-1])
+
+# Fitting a lognormal distribution
+fit <- fitdist(foraging_frequencies, "lnorm")
+
+# Generate the value of the probability density function of the fitted lognormal distribution
+x <- seq(min(foraging_frequencies), max(foraging_frequencies), length.out = 100)
+pdf <- dlnorm(x, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])
+
+# Create data frames for plotting
+plot_data <- data.frame(
+  x = x,
+  pdf = pdf
+)
+
+# Plotting empirical distributions and fitted lognormal distributions
+ggplot() +
+  geom_histogram(aes(x = foraging_frequencies, y = ..density..), bins = 30, fill = 'green', alpha = 0.6) +
+  geom_line(data = plot_data, aes(x = x, y = pdf), color = 'black', size = 1) +
+  labs(x = "Foraging frequency", y = "Frequency", title = "Foraging Frequency Distribution (Colony:E)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+```{r}
+library(ggplot2)
+library(fitdistrplus)
+library(dplyr)
+
+
+data <- read.csv("colony_A.csv")
+
+# Calculate the sum of foraging frequencies for each ant
+foraging_frequencies <- rowSums(data[,-1], na.rm = TRUE)
+
+# Print basic statistical information about the data
+summary(foraging_frequencies)
+print(paste("Number of zeros:", sum(foraging_frequencies == 0)))
+print(paste("Number of negative values:", sum(foraging_frequencies < 0)))
+print(paste("Number of non-finite values:", sum(!is.finite(foraging_frequencies))))
+
+# Filter out non-positive values
+foraging_frequencies <- foraging_frequencies[foraging_frequencies > 0]
+
+# Make sure there are no NaN and Inf values
+foraging_frequencies <- foraging_frequencies[is.finite(foraging_frequencies)]
+
+# Print basic statistics on the cleaned data
+summary(foraging_frequencies)
+print(paste("Number of zeros after cleaning:", sum(foraging_frequencies == 0)))
+print(paste("Number of negative values after cleaning:", sum(foraging_frequencies < 0)))
+print(paste("Number of non-finite values after cleaning:", sum(!is.finite(foraging_frequencies))))
+
+# Check if cleaned data still contains NaNs
+if (any(is.na(foraging_frequencies))) {
+  stop("Data contains NaNs after cleaning.")
+}
+
+# Fitting a lognormal distribution
+fit <- fitdist(foraging_frequencies, "lnorm")
+
+# Calculate the empirical cumulative distribution function (CDF)
+foraging_frequencies_sorted <- sort(foraging_frequencies)
+empirical_cdf <- seq(1, length(foraging_frequencies_sorted)) / length(foraging_frequencies_sorted)
+
+# Calculate the CDF of the fitted lognormal distribution
+fitted_cdf <- plnorm(foraging_frequencies_sorted, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])
+
+# Create data frames for plotting
+plot_data <- data.frame(
+  foraging_frequencies_sorted = foraging_frequencies_sorted,
+  empirical_cdf = empirical_cdf,
+  fitted_cdf = fitted_cdf
+)
+
+# Plotting empirical CDFs and fitted lognormal CDFs
+ggplot(plot_data, aes(x = foraging_frequencies_sorted)) +
+  geom_line(aes(y = empirical_cdf, color = 'Empirical CDF'), size = 1, linetype = "solid") +
+  geom_line(aes(y = fitted_cdf, color = 'Fitted Log-normal CDF'), size = 1, linetype = "dashed") +
+  labs(x = "Foraging frequency", y = "Cumulative Frequency", title = "Foraging Frequency CDF (Colony E)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(name = "CDF", values = c("Empirical CDF" = "blue", "Fitted Log-normal CDF" = "red")) +
+  theme(legend.title = element_blank())
+
+
+```
+
+```{r}
+library(dplyr)
+
+colony_A_data <- read.csv("colony_A.csv")
+# Make sure all the values are positive, then perform a logarithmic transformation
+colony_A_data_shifted <- colony_A_data[, -1] + 1  # Add 1 to avoid log(0)
+
+# Define functions to estimate epsilon
+estimate_epsilon <- function(series) {
+  epsilon <- log(series / lag(series)) %>% na.omit()
+  return(epsilon)
+}
+
+# Apply a function to each sequence to estimate the epsilon
+epsilon_estimates <- apply(colony_A_data_shifted, 1, estimate_epsilon)
+
+epsilon_estimates_df <- as.data.frame(epsilon_estimates)
+
+print(epsilon_estimates_df)
+
+head(epsilon_estimates_df)
+
+
+
+
+
+colony_A_data_shifted <- colony_A_data[, -1] + 1  # Add 1 to avoid log(0)
+
+# Define functions to estimate epsilon
+estimate_epsilon <- function(series) {
+  epsilon <- log(series / lag(series)) %>% na.omit()
+  return(epsilon)
+}
+
+# Apply a function to each sequence to estimate the epsilon
+epsilon_estimates <- apply(colony_A_data_shifted, 1, estimate_epsilon)
+
+# Convert results to dataframes
+epsilon_estimates_df <- as.data.frame(epsilon_estimates)
+
+# Define the function that performs the KS test
+ks_test <- function(series) {
+  series <- na.omit(series) 
+  # Add tiny random noise to avoid warnings caused by duplicate values
+  series <- series + rnorm(length(series), mean = 0, sd = 1e-8)
+  ks <- ks.test(series, "pnorm", mean(series), sd(series))
+  return(data.frame(KS_Statistic = ks$statistic, p_value = ks$p.value))
+}
+
+# Apply KS test to each sequence of epsilon_estimates
+ks_test_results <- apply(epsilon_estimates_df, 2, ks_test)
+
+ks_test_results_df <- do.call(rbind, ks_test_results)
+
+```
+
+
+```{r}
+print(ks_test_results_df)
+
+ggplot(ks_test_results_df, aes(x = KS_Statistic)) +
+  geom_histogram(binwidth = 0.01, fill = "blue", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of KS Statistics for Epsilon Estimates",
+       x = "KS Statistic",
+       y = "Frequency") +
+  theme_minimal()
+significant_results <- ks_test_results_df %>% filter(`p_value` > 0.05)
+
+```
+
+```{r}
+library(ggplot2)
+library(fitdistrplus)
+library(dplyr)
+
+data_A <- read.csv("colony_A.csv")
+data_B <- read.csv("colony_B.csv")
+data_C <- read.csv("colony_C.csv")
+data_D <- read.csv("colony_D.csv")
+data_E <- read.csv("colony_E.csv")
+
+# Calculate the sum of foraging frequencies for each ant
+foraging_A <- rowSums(data_A[,-1], na.rm = TRUE)
+foraging_B <- rowSums(data_B[,-1], na.rm = TRUE)
+foraging_C <- rowSums(data_C[,-1], na.rm = TRUE)
+foraging_D <- rowSums(data_D[,-1], na.rm = TRUE)
+foraging_E <- rowSums(data_E[,-1], na.rm = TRUE)
+
+# Merge the data of all ant colonies
+all_foraging <- c(foraging_A, foraging_B, foraging_C, foraging_D, foraging_E)
+
+# Filter out non-positive values
+all_foraging <- all_foraging[all_foraging > 0]
+
+# Make sure there are no NaN and Inf values
+all_foraging <- all_foraging[is.finite(all_foraging)]
+
+# Fitting a lognormal distribution
+fit <- fitdist(all_foraging, "lnorm")
+
+# Functions for calculating empirical CDFs and fitted lognormal CDFs
+calculate_cdf <- function(data, fit) {
+  data_sorted <- sort(data)
+  empirical_cdf <- seq(1, length(data_sorted)) / length(data_sorted)
+  fitted_cdf <- plnorm(data_sorted, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])
+  data.frame(foraging_frequencies_sorted = data_sorted, empirical_cdf = empirical_cdf, fitted_cdf = fitted_cdf)
+}
+
+# Calculate CDF data for each colony
+plot_data_A <- calculate_cdf(foraging_A, fit)
+plot_data_B <- calculate_cdf(foraging_B, fit)
+plot_data_C <- calculate_cdf(foraging_C, fit)
+plot_data_D <- calculate_cdf(foraging_D, fit)
+plot_data_E <- calculate_cdf(foraging_E, fit)
+
+# Plot empirical CDFs and fitted lognormal CDFs for all ant colonies
+ggplot() +
+  geom_line(data = plot_data_A, aes(x = foraging_frequencies_sorted, y = empirical_cdf, color = 'Colony A Empirical'), size = 1, linetype = "solid") +
+  geom_line(data = plot_data_B, aes(x = foraging_frequencies_sorted, y = empirical_cdf, color = 'Colony B Empirical'), size = 1, linetype = "solid") +
+  geom_line(data = plot_data_C, aes(x = foraging_frequencies_sorted, y = empirical_cdf, color = 'Colony C Empirical'), size = 1, linetype = "solid") +
+  geom_line(data = plot_data_D, aes(x = foraging_frequencies_sorted, y = empirical_cdf, color = 'Colony D Empirical'), size = 1, linetype = "solid") +
+  geom_line(data = plot_data_E, aes(x = foraging_frequencies_sorted, y = empirical_cdf, color = 'Colony E Empirical'), size = 1, linetype = "solid") +
+  geom_line(data = plot_data_A, aes(x = foraging_frequencies_sorted, y = fitted_cdf, color = 'Fitted Log-normal'), size = 1, linetype = "dashed") +
+  labs(x = "Foraging frequency", y = "Cumulative Frequency", title = "Foraging Frequency CDF (All Colonies)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(name = "CDF", values = c("Colony A Empirical" = "blue", "Colony B Empirical" = "orange", 
+                                              "Colony C Empirical" = "green", "Colony D Empirical" = "red", 
+                                              "Colony E Empirical" = "purple", "Fitted Log-normal" = "black")) +
+  theme(legend.title = element_blank())
+
+
+```
+
+```{r}
+library(ggplot2)
+library(readr)
+
+# Read data and specify column types
+data_A <- read_csv("colony_E.csv", col_types = cols(.default = "d"))
+
+# Functions to calculate Pearson's correlation coefficient
+calculate_pearson_coefficients <- function(data) {
+  cor_list <- c()
+  n <- nrow(data)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      cor_value <- cor(as.numeric(data[i, -1]), as.numeric(data[j, -1]), use="complete.obs")
+      cor_list <- c(cor_list, cor_value)
+    }
+  }
+  return(cor_list)
+}
+
+# Calculate the Pearson correlation coefficient
+correlations_A <- calculate_pearson_coefficients(data_A)
+
+# Create data frames for plotting
+cor_data <- data.frame(Correlation = correlations_A)
+
+# Plotting histograms
+ggplot(cor_data, aes(x = Correlation)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  labs(x = "Correlation coefficient", y = "Frequency", title = "Pearson Correlation Coefficient Distribution (Colony E)") +
+  theme_minimal()
+
+
+
+
+
+```
+
+```{r}
+library(ggplot2)
+library(readr)
+library(fitdistrplus)
+
+data <- read_csv("colony_A.csv", col_types = cols(.default = "d"))
+
+# Calculate the sum of foraging frequencies for each ant
+foraging_frequencies <- rowSums(data[,-1], na.rm = TRUE)
+
+# Find the most active ant
+most_active_ant_index <- which.max(foraging_frequencies)
+most_active_ant_data <- data[most_active_ant_index, -1]
+
+# Convert data into vectors and filter out non-positive values
+most_active_ant_data <- as.numeric(most_active_ant_data)
+most_active_ant_data <- most_active_ant_data[most_active_ant_data > 0]
+
+# Ensure that data is not empty
+if (length(most_active_ant_data) == 0) {
+  stop("The data for the most active ant contains no positive values.")
+}
+
+# Fitting lognormal scores
+fit <- fitdist(most_active_ant_data, "lnorm")
+
+# Generate data points of fitted distributions for visualisation
+x <- seq(min(most_active_ant_data), max(most_active_ant_data), length.out = 100)
+fitted_cdf <- plnorm(x, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])
+
+# Calculate the empirical cumulative distribution function (ECDF) for real data
+ecdf_data <- ecdf(most_active_ant_data)
+
+# Plot empirical CDF of most active ant data and fitted CDF of lognormal distribution
+ggplot() +
+  stat_ecdf(aes(x = most_active_ant_data), geom = "step", color = "blue") +
+  geom_line(aes(x = x, y = fitted_cdf), color = "red") +
+  labs(title = paste("Foraging Frequency CDF of the Most Active Ant (Ant Index:", most_active_ant_index, ")"),
+       x = "Foraging Frequency", y = "CDF") +
+  theme_minimal() +
+  scale_color_manual(name = "CDF", values = c("Empirical CDF" = "blue", "Fitted Log-normal CDF" = "red")) +
+  theme(legend.title = element_blank())
+
+
+```
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(MASS)
+
+# Load the dataset
+colony_data <- read.csv("colony_A.csv")
+
+# Calculate daily foraging activities (sum activities for each day across all ants)
+daily_foraging_activities <- colSums(colony_data[, -1])
+
+# Calculate the cumulative fraction of daily foraging activities
+sorted_activities <- sort(daily_foraging_activities)
+cumulative_fraction <- cumsum(sorted_activities) / sum(sorted_activities)
+
+# Fit a generalized gamma distribution
+fit <- fitdistr(daily_foraging_activities, "gamma")
+shape <- fit$estimate["shape"]
+rate <- fit$estimate["rate"]
+
+# Define the generalized gamma distribution
+x <- seq(min(daily_foraging_activities), max(daily_foraging_activities), length.out = 1000)
+fitted_gamma_cdf <- pgamma(x, shape, rate = rate)
+
+# Create the plot
+data <- data.frame(Activities = sorted_activities, CDF = cumulative_fraction)
+gamma_data <- data.frame(x = x, y = fitted_gamma_cdf)
+
+ggplot() +
+  geom_step(data = data, aes(x = Activities, y = CDF, color = "Empirical CDF"), direction = "hv", linetype = "solid", linewidth = 1) +
+  geom_line(data = gamma_data, aes(x = x, y = y, color = "Fitted Generalized Gamma Distribution"), linewidth = 1) +
+  labs(x = "Daily Foraging Activities", y = "Cumulative Fraction",
+       title = "Fitted Generalized Gamma Distribution in Colony D") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  scale_color_manual(name = "Legend", values = c("Empirical CDF" = "blue", "Fitted Generalized Gamma Distribution" = "red"))
+```
+
+
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(fitdistrplus)
+
+# Read the data
+data <- read.csv("colony_A.csv")
+
+# Extract the activity data excluding the 'Ant Index' column
+activity_data <- data[ , -1]
+
+# Step 1: Calculate the daily foraging activity score A_d(i, m)
+# Ensure there are no zero sums to avoid division by zero
+col_sums <- colSums(activity_data)
+activity_scores <- sweep(activity_data, 2, col_sums, FUN="/", check.margin=FALSE)
+
+# Step 2: Flatten the data to get a single array of all activity scores
+flattened_scores <- as.vector(t(activity_scores))
+
+# Remove zero and NaN values as per the definition 0 < A_d(i, m) <= 1
+non_zero_scores <- flattened_scores[flattened_scores > 0 & !is.na(flattened_scores)]
+
+# Ensure non_zero_scores is a numeric vector
+non_zero_scores <- as.numeric(non_zero_scores)
+
+# Step 3: Fit an exponential distribution to the non-zero activity scores
+fit <- fitdist(non_zero_scores, "exp")
+
+# Display the summary of the fit to get parameter estimates and other statistics
+fit_summary <- summary(fit)
+print(fit_summary)
+
+# Generate the CDF for the fitted distribution
+x <- seq(0, 1, length.out = 100)
+cdf_fitted <- pexp(x, rate = fit$estimate)
+
+# Create a data frame for plotting
+plot_data <- data.frame(
+  x = x,
+  cdf_fitted = cdf_fitted
+)
+
+# Plot the empirical CDF and the fitted CDF
+ggplot() +
+  stat_ecdf(data = data.frame(non_zero_scores), aes(x = non_zero_scores), color = "blue", size = 1.5, geom = "step", linetype = "solid") +
+  geom_line(data = plot_data, aes(x = x, y = cdf_fitted), color = "red", size = 1.5, linetype = "dashed") +
+  labs(title = "Cumulative Distribution of Daily Foraging Activity Scores",
+       x = "Daily Foraging Activity Score (A_d)",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(legend.position = "right") +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  guides(color = guide_legend(override.aes = list(size = 1.5))) +
+  annotate("text", x = 0.7, y = 0.3, label = "Empirical CDF", color = "blue", size = 5) +
+  annotate("text", x = 0.7, y = 0.2, label = "Fitted Exponential CDF", color = "red", size = 5)
+
+
+
+
+
+
+
+
+```
+
+```{r}
+library(ggplot2)
+library(fitdistrplus)
+
+data <- read.csv("colony_A.csv")
+
+# Calculate daily foraging activity scores
+foraging_scores <- as.matrix(data[, -1])
+normalized_scores <- foraging_scores / colSums(foraging_scores, na.rm = TRUE)
+
+# Expand the array to calculate the cumulative distribution
+flattened_scores <- as.vector(normalized_scores)
+
+# Filter out zeros and negatives because the Gamma distribution can't handle zeros and negatives
+filtered_scores <- flattened_scores[flattened_scores > 0]
+
+# Check if the filtered data is empty
+if (length(filtered_scores) == 0) {
+  stop("没有有效的非零和非负数值用于拟合Gamma分布。")
+}
+
+# Fitting Gamma distributions
+fit <- fitdist(filtered_scores, "gamma", start = list(shape = 1, scale = 1))
+print(fit)
+
+# Generate Gamma distribution based on fitted parameters
+shape <- fit$estimate["shape"]
+scale <- fit$estimate["scale"]
+
+# Calculate cumulative distribution
+sorted_scores <- sort(filtered_scores)
+cum_dist <- cumsum(sorted_scores) / sum(sorted_scores)
+gamma_dist <- pgamma(sorted_scores, shape, scale = scale)
+
+# Plotting empirical cumulative distributions and fitted Gamma distributions
+data_to_plot <- data.frame(
+  sorted_scores = sorted_scores,
+  cum_dist = cum_dist,
+  gamma_dist = gamma_dist
+)
+
+ggplot(data_to_plot, aes(x = sorted_scores)) +
+  geom_line(aes(y = cum_dist), color = "blue", size = 1, linetype = "solid") +
+  geom_line(aes(y = gamma_dist), color = "red", size = 1, linetype = "dashed") +
+  labs(
+    title = "Fitting Gamma Distribution to Daily Foraging Activity Scores",
+    x = "Daily Foraging Activity Score",
+    y = "Cumulative Probability"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) +
+  scale_color_manual(
+    name = "Legend",
+    values = c("Empirical Cumulative Distribution" = "blue", "Fitted Gamma Distribution" = "red")
+  )
+
+fit$aic
+
+```
+
+
+```{r}
+library(ggplot2)
+library(fitdistrplus)
+
+data <- read.csv("colony_A.csv")
+
+activity_data <- data[ , -1]
+
+# Step 1: Calculate the daily foraging activity score A_d(i, m)
+# Make sure the columns do not sum to zero to avoid dividing by zero
+col_sums <- colSums(activity_data)
+activity_scores <- sweep(activity_data, 2, col_sums, FUN="/", check.margin=FALSE)
+
+# Step 2: Spread the data to get a single array of all active scores
+flattened_scores <- as.vector(t(activity_scores))
+
+# Remove zero and NaN values, by definition 0 < A_d(i, m) <= 1
+non_zero_scores <- flattened_scores[flattened_scores > 0 & !is.na(flattened_scores)]
+
+# Ensure that non_zero_scores is a vector of values
+non_zero_scores <- as.numeric(non_zero_scores)
+
+# Step 3: Try different distributions to fit non-zero activity scores
+fit_exp <- fitdist(non_zero_scores, "exp")
+fit_norm <- fitdist(non_zero_scores, "norm")
+fit_gamma <- fitdist(non_zero_scores, "gamma")
+fit_weibull <- fitdist(non_zero_scores, "weibull")
+fit_lognorm <- fitdist(non_zero_scores, "lnorm")
+
+# Show summary of fit for parameter estimates and other statistics
+fit_exp_summary <- summary(fit_exp)
+fit_norm_summary <- summary(fit_norm)
+fit_gamma_summary <- summary(fit_gamma)
+fit_weibull_summary <- summary(fit_weibull)
+fit_lognorm_summary <- summary(fit_lognorm)
+
+print(fit_exp_summary)
+print(fit_norm_summary)
+print(fit_gamma_summary)
+print(fit_weibull_summary)
+print(fit_lognorm_summary)
+
+# Compare AIC values for different distributions
+aic_values <- data.frame(
+  Distribution = c("Exponential", "Normal", "Gamma", "Weibull", "Log-Normal"),
+  AIC = c(fit_exp$aic, fit_norm$aic, fit_gamma$aic, fit_weibull$aic, fit_lognorm$aic)
+)
+print(aic_values)
+
+# Generate a CDF of the fitted distribution
+x <- seq(0, 1, length.out = 100)
+cdf_exp <- pexp(x, rate = fit_exp$estimate)
+cdf_norm <- pnorm(x, mean = fit_norm$estimate["mean"], sd = fit_norm$estimate["sd"])
+cdf_gamma <- pgamma(x, shape = fit_gamma$estimate["shape"], rate = fit_gamma$estimate["rate"])
+cdf_weibull <- pweibull(x, shape = fit_weibull$estimate["shape"], scale = fit_weibull$estimate["scale"])
+cdf_lognorm <- plnorm(x, meanlog = fit_lognorm$estimate["meanlog"], sdlog = fit_lognorm$estimate["sdlog"])
+
+# Create data frames for plotting
+plot_data_exp <- data.frame(x = x, CDF = cdf_exp, Distribution = "Exponential")
+plot_data_norm <- data.frame(x = x, CDF = cdf_norm, Distribution = "Normal")
+plot_data_gamma <- data.frame(x = x, CDF = cdf_gamma, Distribution = "Gamma")
+plot_data_weibull <- data.frame(x = x, CDF = cdf_weibull, Distribution = "Weibull")
+plot_data_lognorm <- data.frame(x = x, CDF = cdf_lognorm, Distribution = "Log-Normal")
+
+# Plotting empirical CDFs and fitting CDFs
+ggplot(data.frame(non_zero_scores), aes(x = non_zero_scores)) +
+  stat_ecdf(geom = "step", color = "blue", size = 1.5) +
+  geom_line(data = plot_data_exp, aes(x = x, y = CDF), color = "red", linetype = "solid", size = 1.5) +
+  labs(title = "Cumulative Distribution of Daily Foraging Activity Scores In Colony A(Exponential)",
+       x = "Daily Foraging Activity Score (F_q)",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(data.frame(non_zero_scores), aes(x = non_zero_scores)) +
+  stat_ecdf(geom = "step", color = "blue", size = 1.5) +
+  geom_line(data = plot_data_norm, aes(x = x, y = CDF), color = "green", linetype = "dashed", size = 1.5) +
+  labs(title = "Cumulative Distribution of Daily Foraging Activity Scores In Colony A(Normal)",
+       x = "Daily Foraging Activity Score (F_q)",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(data.frame(non_zero_scores), aes(x = non_zero_scores)) +
+  stat_ecdf(geom = "step", color = "blue", size = 1.5) +
+  geom_line(data = plot_data_gamma, aes(x = x, y = CDF), color = "red", linetype = "dotted", size = 1.5) +
+  labs(title = "Cumulative Distribution of Daily Foraging Activity Scores In Colony A(Gamma)",
+       x = "Daily Foraging Activity Score (F_q)",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(data.frame(non_zero_scores), aes(x = non_zero_scores)) +
+  stat_ecdf(geom = "step", color = "blue", size = 1.5) +
+  geom_line(data = plot_data_weibull, aes(x = x, y = CDF), color = "purple", linetype = "twodash", size = 1.5) +
+  labs(title = "Cumulative Distribution of Daily Foraging Activity Scores In Colony A(Weibull)",
+       x = "Daily Foraging Activity Score (F_q)",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(data.frame(non_zero_scores), aes(x = non_zero_scores)) +
+  stat_ecdf(geom = "step", color = "blue", size = 1.5) +
+  geom_line(data = plot_data_lognorm, aes(x = x, y = CDF), color = "pink", linetype = "longdash", size = 1.5) +
+  labs(title = "Cumulative Distribution of Daily Foraging Activity Scores In Colony A(Log-Normal)",
+       x = "Daily Foraging Activity Score (F_q)",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# Plot residuals and QQ plots to assess the fit
+par(mfrow = c(2, 5))
+
+# Exponential
+plot(fit_exp)
+
+
+# Normal
+plot(fit_norm)
+# Gamma
+plot(fit_gamma)
+# Weibull
+plot(fit_weibull)
+# Log-Normal
+plot(fit_lognorm)
+
+```
+
+
+```{r}
+library(fitdistrplus)
+library(flexsurv)
+library(ggplot2)
+
+ant_activity_data <- read.csv("colony_A.csv")
+activity_data <- ant_activity_data[, -1]  
+
+col_sums <- colSums(activity_data)
+activity_scores <- sweep(activity_data, 2, col_sums, FUN="/", check.margin=FALSE)
+
+flattened_scores <- as.vector(t(activity_scores))
+
+# Remove zero and NaN values, by definition 0 < F(p, n) <= 1
+non_zero_scores <- flattened_scores[flattened_scores > 0 & !is.na(flattened_scores)]
+
+initial_values <- c(mu = 1, sigma = 1, Q = 1)
+
+# Fitting generalised gamma distribution models using flexsurvreg
+gg_model <- flexsurvreg(Surv(non_zero_scores) ~ 1, dist = "gengamma", inits = initial_values)
+
+coef_estimates <- gg_model$res[, c("est", "se")]
+print(coef_estimates)
+
+
+aic_value <- gg_model$AIC
+print(paste("AIC value:", aic_value))
+
+# Extract the CDF of the generalised gamma distribution model
+summary_gg <- summary(gg_model)
+cdf_gg <- summary_gg[[1]]
+
+# Create plotting data frames
+plot_data <- data.frame(
+  time = cdf_gg$time,
+  cdf = 1 - cdf_gg$est
+)
+
+# Plotting empirical CDFs and fitted CDFs of generalised gamma distributions
+ggplot() +
+  stat_ecdf(data = data.frame(non_zero_scores), aes(x = non_zero_scores), color = "blue", linewidth = 1.5, geom = "step", linetype = "solid") +
+  geom_line(data = plot_data, aes(x = time, y = cdf), color = "red", linewidth = 1.5, linetype = "dashed") +
+  labs(title = "Fitted Generalized Gamma Distribution to Daily Activity Scores in Colony A",
+       x = "Daily Activity Score (F(p, n))",
+       y = "Cumulative Probability") +
+  theme_minimal() +
+  theme(legend.position = "right") +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  guides(color = guide_legend(override.aes = list(linewidth = 1.5))) +
+  annotate("text", x = 0.05, y = 0.9, label = "Empirical CDF", color = "blue", size = 5) +
+  annotate("text", x = 0.05, y = 0.85, label = "Fitted Generalized Gamma CDF", color = "red", size = 5)
+
+```
+
+```{r}
+library(forecast)
+
+library(tseries)
+
+
+data <- read.csv('colony_A.csv')
+
+# Step 3: Extract data for the first three ants (remove first column, first column is the ant index)
+start_date <- c(2015, 6)  
+frequency <- 365 
+
+ant1 <- ts(as.numeric(data[1, -1]), start=start_date, frequency=frequency)
+ant2 <- ts(as.numeric(data[2, -1]), start=start_date, frequency=frequency)
+ant3 <- ts(as.numeric(data[3, -1]), start=start_date, frequency=frequency)
+
+# Step 4: Plotting time series separately
+plot(ant1, main="Ant 1 Activity", ylab="Activity", xlab="Time")
+plot(ant2, main="Ant 2 Activity", ylab="Activity", xlab="Time")
+plot(ant3, main="Ant 3 Activity", ylab="Activity", xlab="Time")
+
+# Step 5: Check smoothness after differencing
+adf.test(ant1)  # Check to make sure it's flat稳
+adf.test(diff(ant1))  # Differential and then check for smoothness
+
+adf.test(ant2)
+adf.test(diff(ant2))
+
+adf.test(ant3)
+adf.test(diff(ant3))
+
+# Step 6: Select models and fit ARIMA models separately
+model_ant1 <- auto.arima(ant1)
+model_ant2 <- auto.arima(ant2)
+model_ant3 <- auto.arima(ant3)
+
+# Step 7: Output model summary
+summary(model_ant1)
+summary(model_ant2)
+summary(model_ant3)
+
+# Step 8: Check model residuals separately
+checkresiduals(model_ant1)
+checkresiduals(model_ant2)
+checkresiduals(model_ant3)
+
+# Step 9: Make separate predictions and plot the predictions
+forecast_ant1 <- forecast(model_ant1, h=6)  # Predicting the next 6 points in time
+forecast_ant2 <- forecast(model_ant2, h=6)
+forecast_ant3 <- forecast(model_ant3, h=6)
+
+# Plot predictions and add fitted values
+plot(forecast_ant1, main="Ant 0 ARIMA Forecast", lty=2)
+lines(forecast_ant1$fitted, col=6)
+
+plot(forecast_ant2, main="Ant 1 ARIMA Forecast", lty=2)
+lines(forecast_ant2$fitted, col=6)
+
+plot(forecast_ant3, main="Ant 2 ARIMA Forecast", lty=2)
+lines(forecast_ant3$fitted, col=6)
+
+
+
+ 
+```
+
+```{r}
+library(ggplot2)
+library(dbscan)
+library(factoextra)
+
+data <- read.csv('colony_E.csv')
+# Data preprocessing: select and normalise all active columns
+data_values <- data[, !names(data) %in% 'Ant Index']
+
+# Standardize the data
+scaler <- scale(data_values)
+
+# Apply DBSCAN
+dbscan_result <- dbscan(scaler, eps = 0.5, minPts = 5)
+
+# Add the cluster labels to the original data
+data$Cluster <- dbscan_result$cluster
+
+# Display the first few rows with cluster labels
+head(data)
+# Add the cluster labels to the original data
+data$Cluster <- dbscan_result$cluster
+
+# Display the first few rows with cluster labels
+head(data)
+activity_data <- data[, -1] # 假设第一列是蚂蚁索引列
+data_scaled <- scale(activity_data)
+
+# Clustering using DBSCAN
+dbscan_result <- dbscan(data_scaled, eps = 0.5, minPts = 5)
+
+# Extract two dimensions for visualisation
+pca_result <- prcomp(data_scaled, center = TRUE, scale. = TRUE)
+data_pca <- data.frame(pca_result$x[, 1:2])
+colnames(data_pca) <- c("PCA1", "PCA2")
+
+# Create a data frame for plotting
+plot_data <- data_pca
+plot_data$Cluster <- as.factor(dbscan_result$cluster)
+
+# Plotting clustering results
+ggplot(plot_data, aes(x = PCA1, y = PCA2, color = Cluster, shape = Cluster)) +
+  geom_point(size = 3, alpha = 0.7) +
+  scale_color_viridis_d() +
+  ggtitle("DBSCAN Clustering Visualization with PCA In Colony E") +
+  theme_minimal()
+
+
+```
+
+
+```{r}
+library(cluster)
+library(factoextra)
+library(dbscan)
+library(scales)
+library(ggplot2)
+
+
+data <- read.csv("colony_E.csv")
+
+# Extract activity data (exclude ‘Ant Index’ columns)
+activity_data <- data[, !(names(data) %in% c("Ant.Index"))]
+
+# Standardised data
+activity_data_scaled <- scale(activity_data)
+
+# Plotting K-distance
+kNNdistplot(activity_data_scaled, k = 5)  # k value equal to minPts
+abline(h = 0.5, col = "red", lty = 2)  # Assuming 0.5 is a potential eps value
+
+# Grid search to select the best parameters
+eps_values <- seq(0.1, 2.0, by = 0.1)
+minPts_values <- seq(5, 50, by = 5)
+
+best_eps <- 0
+best_minPts <- 0
+best_score <- -1
+
+for (eps in eps_values) {
+  for (minPts in minPts_values) {
+    db <- dbscan(activity_data_scaled, eps, minPts)
+    if (length(unique(db$cluster)) > 1) {
+      score <- mean(silhouette(db$cluster, dist(activity_data_scaled))[, 3])
+      if (score > best_score) {
+        best_score <- score
+        best_eps <- eps
+        best_minPts <- minPts
+      }
+    }
+  }
+}
+
+cat("best eps：", best_eps, "\n")
+cat("best minPts：", best_minPts, "\n")
+cat("best scores：", best_score, "\n")
+
+# Apply optimal parameters for DBSCAN clustering
+db <- dbscan(activity_data_scaled, best_eps, best_minPts)
+data$Cluster <- db$cluster
+
+# Show distribution of clusterscluster_counts <- table(data$Cluster)
+print(cluster_counts)
+
+# Clustering results after visual PCA dimensionality reduction
+activity_data_pca <- prcomp(activity_data_scaled)$x[, 1:2]
+fviz_cluster(
+  list(data = activity_data_pca, cluster = db$cluster), 
+  geom = "point", 
+  stand = FALSE, 
+  ellipse = TRUE
+) + 
+  labs(
+    title = "DBSCAN Clustering Results (PCA-reduced Data) in Colony A",
+    x = "PCA Component 1",
+    y = "PCA Component 2"
+  )
+
+
+
+```
+
+
+```{r}
+library(cluster)
+library(fpc)
+library(clusterSim)
+library(dplyr)
+
+data <- read.csv('colony_E.csv')
+
+# Extract features and normalise data
+features <- data %>% dplyr::select(-Ant.Index) 
+scaled_features <- scale(features)
+
+# Compute K-means clustering
+set.seed(42)
+kmeans_result <- kmeans(scaled_features, centers = 3, nstart = 25)
+
+# Davies-Bouldin Index (DBI) for K-means
+kmeans_dbi <- index.DB(scaled_features, kmeans_result$cluster)$DB
+
+#  Calinski-Harabasz Index (CHI) for K-means
+kmeans_chi <- cluster.stats(d = dist(scaled_features), clustering = kmeans_result$cluster)$ch
+
+#  DBSCAN
+dbscan_result <- dbscan(scaled_features, eps = 1.6, MinPts = 5)
+
+# Processing Cluster Numbers in DBSCAN Clustering Results
+dbscan_clusters <- as.integer(factor(dbscan_result$cluster))
+
+# Davies-Bouldin Index (DBI) for DBSCAN
+if (length(unique(dbscan_clusters)) > 1) {
+  dbscan_dbi <- index.DB(scaled_features, dbscan_clusters)$DB
+  dbscan_chi <- cluster.stats(d = dist(scaled_features), clustering = dbscan_clusters)$ch
+} else {
+  dbscan_dbi <- 'Not applicable - only one cluster'
+  dbscan_chi <- 'Not applicable - only one cluster'
+}
+
+
+list(kmeans_dbi = kmeans_dbi, kmeans_chi = kmeans_chi, dbscan_dbi = dbscan_dbi, dbscan_chi = dbscan_chi)
+
+
+
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+library(dbscan)
+
+data <- read.csv('colony_A.csv')
+
+# Data preprocessing: first column removed and normalised
+activity_data <- data[, -1] # Assuming the first column is an ant index column
+data_scaled <- scale(activity_data)
+
+# Clustering using K-means
+set.seed(42)
+kmeans_result <- kmeans(data_scaled, centers = 3, nstart = 25)
+cluster_labels <- kmeans_result$cluster
+
+# Calculate contour coefficients for K-means
+kmeans_silhouette <- silhouette(cluster_labels, dist(data_scaled))
+kmeans_avg_silhouette <- mean(kmeans_silhouette[, 3])
+
+# Clustering using DBSCAN
+dbscan_result <- dbscan::dbscan(data_scaled, eps = 1.6, minPts = 5)
+dbscan_labels <- dbscan_result$cluster
+
+# Calculate DBSCAN profile coefficients
+if (length(unique(dbscan_labels)) > 1) {
+  dbscan_silhouette <- silhouette(dbscan_labels, dist(data_scaled))
+  dbscan_avg_silhouette <- mean(dbscan_silhouette[, 3])
+} else {
+  dbscan_avg_silhouette <- 'Not applicable - only one cluster'
+}
+
+# Output profile factor
+kmeans_avg_silhouette
+dbscan_avg_silhouette
+
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+library(cluster)
+library(factoextra)
+library(clusterSim)
+
+data <- read.csv("colony_C.csv")
+
+data <- data[, -1]
+
+# Standardised data
+data_scaled <- scale(data)
+
+# Calculate the distance matrix
+dist_matrix <- dist(data_scaled)
+
+# Perform hierarchical cluster analyses
+hc <- hclust(dist_matrix, method = "ward.D2")
+
+# Cluster dendrograms (tree diagrams) produced
+plot(hc, main = "Dendrogram of Hierarchical Clustering", xlab = "", sub = "", cex = 0.9)
+
+# of optimal clusters determined
+fviz_nbclust(data_scaled, FUN = hcut, method = "wss")
+
+# Suppose we choose 3 clusters
+clusters <- cutree(hc, k = 2)
+
+# Plotting cut lines on tree diagrams
+rect.hclust(hc, k = 2, border = 2:4)
+
+# Add clustering results to raw data
+data_with_clusters <- data.frame(data, cluster = as.factor(clusters))
+
+# Output clustering results
+print(data_with_clusters)
+
+# Dendrogram with rectangles showing the clusters
+plot(hc, main = "Dendrogram of Hierarchical Clustering", xlab = "", sub = "", cex = 0.9)
+rect.hclust(hc, k = 2, border = 2:4)  # Assuming 3 clusters
+# Load necessary library
+library(factoextra)
+
+# Visualize clusters using PCA
+fviz_cluster(list(data = data_scaled, cluster = clusters),
+             geom = "point", ellipse.type = "convex",
+             main = "Cluster Plot using PCA",
+             palette = "jco", ggtheme = theme_minimal())
+
+
+# Assuming the first two columns are the most important features
+plot(data[,1], data[,2], col = clusters, pch = 19,
+     main = "Clusters in Original Feature Space",
+     xlab = "Feature 1", ylab = "Feature 2")
+
+
+# Calculate the distance matrix
+dist_matrix <- dist(data_scaled)
+
+# Profile analysis of clustering results
+sil <- silhouette(clusters, dist_matrix)
+
+# Contour mapping
+fviz_silhouette(sil)
+# Calculate the average profile factor
+avg_silhouette <- mean(sil[, 3])
+print(paste("Average Silhouette Coefficient:", avg_silhouette))
+
+
+# Calculate contour coefficients for different number of clusters
+library(cluster)
+for(k in 2:10){
+  clusters <- cutree(hc, k = k)
+  sil <- silhouette(clusters, dist_matrix)
+  cat("For k =", k, "the average silhouette coefficient is", mean(sil[, 3]), "\n")
+}
+
+
+```
+
+
+```{r}
+library(cluster)
+library(factoextra)
+library(clusterSim)
+library(fpc)
+
+
+data <- read.csv('colony_E.csv')
+
+
+activity_data <- data[, -1] 
+data_scaled <- scale(activity_data)
+
+# Use hierarchical clustering
+dist_matrix <- dist(data_scaled, method = "euclidean")
+hclust_result <- hclust(dist_matrix, method = "ward.D2")
+
+# Classify hierarchical clustering results into 4 clusters
+cluster_labels <- cutree(hclust_result, k = 2)
+
+# Calculate profile coefficients for hierarchical clustering
+hclust_silhouette <- silhouette(cluster_labels, dist_matrix)
+hclust_avg_silhouette <- mean(hclust_silhouette[, 3])
+
+# Calculate DBI for hierarchical clustering
+dbi_hierarchical <- index.DB(data_scaled, cluster_labels, centrotypes="centroids")$DB
+
+# Calinski-Harabasz Index (CHI) for calculating hierarchical clustering
+cluster_stats <- cluster.stats(dist_matrix, cluster_labels)
+chi_hierarchical <- cluster_stats$ch
+
+# Output contour coefficients, DBI and CHI
+hclust_avg_silhouette
+dbi_hierarchical
+chi_hierarchical
+
+
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+
+
+data <- read.csv("colony_E.csv")
+data <- data[, -1]
+data_scaled <- scale(data)
+
+# of optimal clusters determined
+fviz_nbclust(data_scaled, FUN = kmeans, method = "wss")
+
+# Suppose we choose 3 clusters
+set.seed(42)
+kmeans_result <- kmeans(data_scaled, centers = 2, nstart = 25)
+clusters <- kmeans_result$cluster
+
+# Add clustering results to raw data
+data_with_clusters <- data.frame(data, cluster = as.factor(clusters))
+
+# Output clustering knots
+print(data_with_clusters)
+
+# Plot PCA of K-means clustering results
+fviz_cluster(kmeans_result, data = data_scaled,
+             geom = "point", ellipse.type = "convex",
+             main = "K-means Cluster Plot using PCA",
+             palette = "jco", ggtheme = theme_minimal())
+
+# Plotting clustering results in the original feature space
+plot(data[,1], data[,2], col = clusters, pch = 19,
+     main = "K-means Clusters in Original Feature Space",
+     xlab = "Feature 1", ylab = "Feature 2")
+
+# Calculate the distance matrix
+dist_matrix <- dist(data_scaled)
+
+# Profile analysis of clustering results
+sil <- silhouette(clusters, dist_matrix)
+
+# Contour mapping
+fviz_silhouette(sil)
+
+# Calculate the average profile factor
+avg_silhouette <- mean(sil[, 3])
+print(paste("Average Silhouette Coefficient:", avg_silhouette))
+
+# Calculate contour coefficients for different number of clusters
+for(k in 2:10){
+  kmeans_result <- kmeans(data_scaled, centers = k, nstart = 25)
+  clusters <- kmeans_result$cluster
+  sil <- silhouette(clusters, dist_matrix)
+  cat("For k =", k, "the average silhouette coefficient is", mean(sil[, 3]), "\n")
+}
+
+```
+
+```{r}
+library(readr)
+colony_A_data <- read_csv("colony_A.csv")
+
+time_series_data <- as.matrix(colony_A_data[ , -1])
+library(dtwclust)
+
+# Convert data to time series format
+ts_data <- tslist(time_series_data)
+
+# Time series clustering using DTW distances
+clustering <- tsclust(ts_data, type = "partitional", k = 3, distance = "dtw_basic", centroid = "dba")
+
+# Extract clustering labels
+colony_A_data$Cluster <- clustering@cluster
+head(colony_A_data)
+library(ggplot2)
+
+# Calculate the DTW distance matrix
+distance_matrix <- proxy::dist(ts_data, method = "dtw_basic")
+
+# MDS analyses performed
+mds <- cmdscale(distance_matrix, k = 2)
+
+# Combine MDS results with cluster labelling
+mds_data <- data.frame(MDS1 = mds[,1], MDS2 = mds[,2], Cluster = as.factor(colony_A_data$Cluster))
+
+ggplot(mds_data, aes(x = MDS1, y = MDS2, color = Cluster)) +
+geom_point(size = 3) +
+  theme_minimal() +
+  labs(title = "MDS Plot of Time Series Clustering", x = "MDS1", y = "MDS2", color = "Cluster")
+
+
+  
+```
+
+
